@@ -36,7 +36,6 @@ describe('TodoPages', () => {
             await todoListComponent.props().handleDelete("1");
             const todoListComponentUpdated = wrapper.find('TodoList');
             const expectedTodos = todoListComponentUpdated.props().todos;
-
             expect(expectedTodos.length).toBe(4);
             expect(expectedTodos).toEqual(expectedData);
         })
