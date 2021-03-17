@@ -1,6 +1,13 @@
 import React from "react";
 import { shallow, mount } from 'enzyme';
 import TodoPages from './TodoPages';
+import { act } from "@testing-library/react";
+import {fetchTodos} from '../services/TodoServices'
+
+jest.mock('../services/TodoServices', ()=> ({
+    fetchTodos: jest.fn(),
+}))
+
 describe('TodoPages', () => {
     describe('#render', () => {
         it('should render TodoPages correctly', () => {
@@ -73,4 +80,55 @@ describe('TodoPages', () => {
 
         })
     });
+
+    describe('#handleEdit', () => {
+        it('should edit data when handleEdit is invoked', async() => {
+            const expectedData = [
+                {_id : 1, title : "Edited Task 1", desc : "Edited desc"},
+                {_id : 2, title : "Task 2", desc : "do the thing that in task 2"},
+                {_id : 3, title : "Task 3", desc : "do the thing that in task 3"},
+                {_id : 4, title : "Task 4", desc : "do the thing that in task 4"},
+                {_id : 5, title : "Task 5", desc : "do the thing that in task 5"},
+                
+            ];
+            const wrapper = mount(<TodoPages/>);
+
+            await act(async()=>{
+                const todoListComponent = wrapper.find('TodoList');
+                await todoListComponent.props().handleEdit(1);
+                await wrapper.update();
+                const todoFormComponent = wrapper.find('EditForm');
+                await todoFormComponent.props().handleUpdate(1, "Edited Task 1", "Edited desc");
+                await wrapper.update();
+            });
+            await flushPromises();
+            const todoListComponentUpdated = wrapper.find('TodoList');
+
+            expect(todoListComponentUpdated.props().todos).toEqual(expectedData);
+
+        })
+    });
+
+    describe('#fetch', () => {
+        it('should fetch data when page is loaded' , async () => {
+            const expectedData = [
+                {_id : "6051c471c355991e8c259e94", title : "Task 1", desc : "do the thing that in task 1"},
+                {_id : "6051c471c355991e8c259e93", title : "Task 2", desc : "do the thing that in task 2"},
+                {_id : '6051c471c355991e8c259e92', title : "Task 3", desc : "do the thing that in task 3"},
+                {_id : '6051c471c355991e8c259e91', title : "Task 4", desc : "do the thing that in task 4"},
+                {_id : '6051c471c355991e8c259e90', title : "Task 5", desc : "do the thing that in task 5"},
+            ]
+            fetchTodos.mockResolvedValue(expectedData);
+            
+            let mountComponent;
+            await act(async()=> {
+                mountComponent = await mount(<TodoPages />);
+            })
+            mountComponent.update();
+            const todoListComponent = mountComponent.find('TodoList'); //masih ada warning nih
+
+            expect(todoListComponent.props().todos).toEqual(expectedData);
+            
+        }); 
+    }) 
 })
