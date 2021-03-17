@@ -3,11 +3,11 @@ import { shallow, mount } from 'enzyme';
 import TodoList from './TodoList';
 
 const dummyData = [
-    {_id : '1', title : "Task 1", desc : "do the thing that in task 1"},
-    {_id : '2', title : "Task 2", desc : "do the thing that in task 2"},
-    {_id : '3', title : "Task 3", desc : "do the thing that in task 3"},
-    {_id : '4', title : "Task 4", desc : "do the thing that in task 4"},
-    {_id : '5', title : "Task 5", desc : "do the thing that in task 5"},
+    {_id : 1, title : "Task 1", desc : "do the thing that in task 1"},
+    {_id : 2, title : "Task 2", desc : "do the thing that in task 2"},
+    {_id : 3, title : "Task 3", desc : "do the thing that in task 3"},
+    {_id : 4, title : "Task 4", desc : "do the thing that in task 4"},
+    {_id : 5, title : "Task 5", desc : "do the thing that in task 5"},
 ]
 
 
@@ -36,7 +36,7 @@ describe("TodoList", () => {
             actualButtons.at(0).simulate('click');
 
             expect(mockHandleDelete).toHaveBeenCalled();
-            expect(mockHandleDelete).toHaveBeenCalledWith("1");
+            expect(mockHandleDelete).toHaveBeenCalledWith(1);
         })
 
     })

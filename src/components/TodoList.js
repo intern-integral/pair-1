@@ -7,7 +7,7 @@ const TodoList = ({todos, handleDelete}) => {
         <div className="todo-list">
             <ul>
                 {todos && todos.map(({ _id, title, desc}) => 
-                <li key={_id} className="task">{title} - {desc} 
+                <li key={_id} className="task">{_id}-{title} - {desc} 
                 <button className="del-btn" onClick={() => handleDelete(_id)}>
                     Delete
                 </button>
