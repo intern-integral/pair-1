@@ -2,10 +2,11 @@ import React from "react";
 import { shallow, mount } from 'enzyme';
 import TodoPages from './TodoPages';
 import { act } from "@testing-library/react";
-import {fetchTodos} from '../services/TodoServices'
+import { fetchTodos, postTodo } from '../services/TodoServices'
 
 jest.mock('../services/TodoServices', ()=> ({
     fetchTodos: jest.fn(),
+    postTodo: jest.fn()
 }))
 
 describe('TodoPages', () => {
@@ -61,23 +62,31 @@ describe('TodoPages', () => {
 
     describe('#handleSubmit', () => {
         it('should add todo when handleSubmit invoked', async() => {
-            const expectedData = [
-                {_id : 1, title : "Task 1", desc : "do the thing that in task 1"},
-                {_id : 2, title : "Task 2", desc : "do the thing that in task 2"},
-                {_id : 3, title : "Task 3", desc : "do the thing that in task 3"},
-                {_id : 4, title : "Task 4", desc : "do the thing that in task 4"},
-                {_id : 5, title : "Task 5", desc : "do the thing that in task 5"},
-                {_id : 6, title : "Task 6", desc : "do the thing that in task 6"},
-            ];
-            const wrapper = shallow(<TodoPages/>);
+            fetchTodos.mockResolvedValue([
+                {_id : '6051c471c355991e8c259e94', title : "Task 1", desc : "do the thing that in task 1"},
+                {_id : '6051c471c355991e8c259e93', title : "Task 2", desc : "do the thing that in task 2"},
+                {_id : '6051c471c355991e8c259e92', title : "Task 3", desc : "do the thing that in task 3"},
+                {_id : '6051c471c355991e8c259e91', title : "Task 4", desc : "do the thing that in task 4"},
+                {_id : '6051c471c355991e8c259e90', title : "Task 5", desc : "do the thing that in task 5"}
+            ])
+            const dummyData = {_id : "6051c471c355991e8c259eKK", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
+            postTodo.mockResolvedValue(dummyData);
+            const wrapper = mount(<TodoPages/>);
+            await act(async()=> {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                await wrapper.update();
+            })
 
-            const todoFormComponent = wrapper.find('TodoForm');
-            await todoFormComponent.props().handleSubmit("Task 6", "do the thing that in task 6");
+            await act(async() => {
+                const todoFormComponent = wrapper.find('TodoForm');
+                await todoFormComponent.props().handleSubmit(dummyData.title, dummyData.desc);
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                await wrapper.update();
+            })
             const todoListComponent = wrapper.find('TodoList');
-
+ 
+            expect(todoListComponent.props().todos).toContain(dummyData)
             expect(todoListComponent.props().todos.length).toBe(6);
-            expect(todoListComponent.props().todos).toEqual(expectedData);
-
         })
     });
 
@@ -125,10 +134,9 @@ describe('TodoPages', () => {
                 mountComponent = await mount(<TodoPages />);
             })
             mountComponent.update();
-            const todoListComponent = mountComponent.find('TodoList'); //masih ada warning nih
+            const todoListComponent = mountComponent.find('TodoList');
 
             expect(todoListComponent.props().todos).toEqual(expectedData);
-            
         }); 
     }) 
 })

@@ -1,7 +1,7 @@
 import React from 'react';
 
 const TodoList = ({todos, handleDelete, handleEdit}) => {
-    return(
+    return(        
         <div className="todo-list">
             <ul>
                 {todos.length && todos.map(({ _id, title, desc}) => 

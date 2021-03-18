@@ -17,8 +17,8 @@ describe("TodoForm",() => {
                     value: "do the thing that in task 6",
                 }
             }
-            const wrapper = mount(<TodoForm handleSubmit = { mockHandleSubmit }/>);
-
+            const wrapper = mount(<TodoForm handleSubmit = { mockHandleSubmit }/>); 
+            
             const submitButtonWrapper = wrapper.find('#submit-btn');
             const titleField = wrapper.find('#input-title-field');
             const descField = wrapper.find("#input-desc-field");

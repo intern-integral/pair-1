@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TodoList from './TodoList';
 import TodoForm from './TodoForm';
 import EditForm from './EditForm';
-import {fetchTodos} from '../services/TodoServices';
+import {fetchTodos, postTodo} from '../services/TodoServices';
 
 const dummyData = [
     {_id : 1, title : "Task 1", desc : "do the thing that in task 1"},
@@ -18,15 +18,22 @@ const TodoPages = ({}) => {
     const [todos, setTodos] = useState([]);
     const [formData, setFormData] = useState(defaultData);
     
-    const setupData = async () => {
-        await setTodos(await fetchTodos())
-    };
-    // commit bruh!
-    // git add .
-    // git commint -m "[Kenny, Nabeel] add fetch data"
-    // git push origin exercise
-    useEffect(async () => {
+    // const setupData = async () => {
+    //     const data = await fetchTodos();
+    //     setTodos(data);
+    // };
+    
+    // useEffect(async () => {
+    //     await setupData();
+    // }, []) 
+
+    useEffect(() => {
+        const setupData = async()=> {
+            const data = await fetchTodos();
+            setTodos(data);
+        };
         setupData();
+        console.log(todos);
     }, []) 
 
     const handleDelete = (id) => {
@@ -34,18 +41,9 @@ const TodoPages = ({}) => {
         setTodos(newTodos);
     }
 
-    const handleSubmit = (value, descValue) => {
-        const title = value; 
-        const desc = descValue;
-        const id = todos.length + 1;
-        todos.push(
-            {
-                _id : id,
-                title,
-                desc
-            }
-        );
-        setTodos([...todos]);
+    const handleSubmit = async(title, desc) => {
+        const result = await postTodo(title, desc);
+        setTodos([...todos,result]);
     }
 
     const handleUpdate = (id, editValue, editDescValue) => {
@@ -70,9 +68,7 @@ const TodoPages = ({}) => {
     return(
         <div className="todo-pages">
             <TodoForm
-                handleSubmit={handleSubmit}//ini buat component baru yak?
-                //handleUpdate={handleUpdate}
-                //todo={formData}
+                handleSubmit={handleSubmit}
             />
             
             {formData?._id && <EditForm handleUpdate={handleUpdate} todo={formData}/>}
