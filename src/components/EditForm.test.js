@@ -48,8 +48,6 @@ describe("EditForm", ()=> {
             });
 
             expect(mockHandleUpdate).toHaveBeenCalledWith(mockTodo._id,"Edited title","Edited desc");
-            
-            
         })
 
     })

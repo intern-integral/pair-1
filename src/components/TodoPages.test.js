@@ -2,14 +2,18 @@ import React from "react";
 import { shallow, mount } from 'enzyme';
 import TodoPages from './TodoPages';
 import { act } from "@testing-library/react";
-import { fetchTodos, postTodo } from '../services/TodoServices'
+import { fetchTodos, postTodo, editTodo } from '../services/TodoServices'
 
 jest.mock('../services/TodoServices', ()=> ({
     fetchTodos: jest.fn(),
-    postTodo: jest.fn()
+    postTodo: jest.fn(),
+    editTodo: jest.fn()
 }))
 
 describe('TodoPages', () => {
+    afterEach(()=> {
+        jest.resetAllMocks();
+    })
     describe('#render', () => {
         it('should render TodoPages correctly', () => {
             const wrapper = shallow(<TodoPages/>);
@@ -82,11 +86,12 @@ describe('TodoPages', () => {
                 await todoFormComponent.props().handleSubmit(dummyData.title, dummyData.desc);
                 await (new Promise(resolve => setTimeout(resolve, 0)));
                 await wrapper.update();
-            })
+            }) 
             const todoListComponent = wrapper.find('TodoList');
  
-            expect(todoListComponent.props().todos).toContain(dummyData)
+            expect(todoListComponent.props().todos).toContain(dummyData);
             expect(todoListComponent.props().todos.length).toBe(6);
+            expect(postTodo).toHaveBeenCalledWith(dummyData.title, dummyData.desc);
         })
     });
 

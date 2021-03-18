@@ -15,3 +15,13 @@ export const postTodo = async(title, desc) => {
     const response = await axios.post(URL, newTodo);
     return response.data;
 }
+
+export const editTodo = async(id, title, desc)=> {
+    const editTodo = {
+        _id : id,
+        title,
+        desc
+    }
+    const response = await axios.patch(`${URL}/${id}`, editTodo)
+    return response.data;
+}

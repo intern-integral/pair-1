@@ -1,20 +1,20 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import TodoServices, { fetchTodos, postTodo } from './TodoServices'
+import TodoServices, { fetchTodos, postTodo, editTodo } from './TodoServices'
 import { act } from 'react-dom/test-utils';
 import axios from 'axios';
 
 jest.mock('axios',()=> ({
     get: jest.fn(),
-    post: jest.fn()
+    post: jest.fn(),
+    patch: jest.fn()
 }))
-
 
 describe('TodoServices', ()=> {
     describe('#fetchTodos', ()=> {
-        // afterEach(()=> {
-        //     jest.resetAllMocks();
-        // })
+        afterEach(()=> {
+            jest.resetAllMocks();
+        })
         it('should fetch all data when called', async()=> {
             const expectedValue = {
                 data: {
@@ -54,7 +54,6 @@ describe('TodoServices', ()=> {
             
             expect(fetchedData).toEqual(expectedValue.data.data);
             expect(axios.get).toHaveBeenCalledWith(expectedURL);
-
         })
     })
     describe('#postTodo', ()=> {
@@ -70,6 +69,22 @@ describe('TodoServices', ()=> {
 
             expect(postData).toEqual(expectedValue.data);
             expect(axios.post).toHaveBeenCalledWith(expectedURL,expectedValue);
+        })
+    })
+
+    describe('#editTodo', ()=> {
+        it('should edit data when called', async()=> {
+            const expectedValue = {
+                _id: '112233',
+                title : 'watching tv', 
+                desc : 'watch full series'                    
+            };
+            axios.patch.mockReturnValue(expectedValue);
+            const expectedURL = `http://localhost:4000/api/todos/${expectedValue._id}`;
+
+            await editTodo(expectedValue._id,expectedValue.title,expectedValue.desc);
+
+            expect(axios.patch).toHaveBeenCalledWith(expectedURL,expectedValue);
         })
     })
 })

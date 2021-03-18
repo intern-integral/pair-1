@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TodoList from './TodoList';
 import TodoForm from './TodoForm';
 import EditForm from './EditForm';
-import {fetchTodos, postTodo} from '../services/TodoServices';
+import {fetchTodos, postTodo, editTodo} from '../services/TodoServices';
 
 const dummyData = [
     {_id : 1, title : "Task 1", desc : "do the thing that in task 1"},
@@ -46,15 +46,16 @@ const TodoPages = ({}) => {
         setTodos([...todos,result]);
     }
 
-    const handleUpdate = (id, editValue, editDescValue) => {
+    const handleUpdate = async(id, title, desc) => {
+        const editedTodo = await editTodo(id, title, desc);
         const newTodos = todos.map(todo => {
             if (todo._id === id) {
-                return {_id : id, title : editValue, desc : editDescValue}
+                return editedTodo;
             }
             return todo;
         });
-
-        setTodos([...newTodos]);
+        
+        setTodos(newTodos);
         setFormData(defaultData);
     }
 
