@@ -25,3 +25,8 @@ export const editTodo = async(id, title, desc)=> {
     const response = await axios.patch(`${URL}/${id}`, editTodo)
     return response.data;
 }
+
+export const deleteTodo = async(id)=> {
+    const response = await axios.delete(`${URL}/${id}`);
+    return response.data;
+}

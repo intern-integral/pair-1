@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TodoList from './TodoList';
 import TodoForm from './TodoForm';
 import EditForm from './EditForm';
-import {fetchTodos, postTodo, editTodo} from '../services/TodoServices';
+import {fetchTodos, postTodo, editTodo, deleteTodo} from '../services/TodoServices';
 
 const dummyData = [
     {_id : 1, title : "Task 1", desc : "do the thing that in task 1"},
@@ -14,19 +14,10 @@ const dummyData = [
 
 const defaultData = {_id:'', title:'', desc:''};
 
-const TodoPages = ({}) => {
+const TodoPages = () => {
     const [todos, setTodos] = useState([]);
     const [formData, setFormData] = useState(defaultData);
     
-    // const setupData = async () => {
-    //     const data = await fetchTodos();
-    //     setTodos(data);
-    // };
-    
-    // useEffect(async () => {
-    //     await setupData();
-    // }, []) 
-
     useEffect(() => {
         const setupData = async()=> {
             const data = await fetchTodos();
@@ -35,7 +26,8 @@ const TodoPages = ({}) => {
         setupData();
     }, []) 
 
-    const handleDelete = (id) => {
+    const handleDelete = async(id) => {
+        await deleteTodo(id);
         const newTodos = todos.filter((todo)=> todo._id !== id);
         setTodos(newTodos);
     }
@@ -63,8 +55,6 @@ const TodoPages = ({}) => {
         setFormData(findData);
     }
 
-//    {formData?._id && <EditForm handleUpdate={handleUpdate} todo={formData}/>}
-//<EditForm handleUpdate={handleUpdate} todo={formData}/>
     return(
         <div className="todo-pages">
             <TodoForm

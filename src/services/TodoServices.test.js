@@ -1,13 +1,14 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import TodoServices, { fetchTodos, postTodo, editTodo } from './TodoServices'
+import TodoServices, { fetchTodos, postTodo, editTodo, deleteTodo } from './TodoServices'
 import { act } from 'react-dom/test-utils';
 import axios from 'axios';
 
 jest.mock('axios',()=> ({
     get: jest.fn(),
     post: jest.fn(),
-    patch: jest.fn()
+    patch: jest.fn(),
+    delete: jest.fn()
 }))
 
 describe('TodoServices', ()=> {
@@ -85,6 +86,22 @@ describe('TodoServices', ()=> {
             await editTodo(expectedValue._id,expectedValue.title,expectedValue.desc);
 
             expect(axios.patch).toHaveBeenCalledWith(expectedURL,expectedValue);
+        })
+    })
+
+    describe('#deleteTodo', ()=> {
+        it('should delete data when called', async()=> {
+            const expectedValue = {
+                _id: '112233',
+                title : 'watching tv', 
+                desc : 'watch full series'                    
+            };
+            axios.delete.mockReturnValue(expectedValue);
+            const expectedURL = `http://localhost:4000/api/todos/${expectedValue._id}`;
+    
+            await deleteTodo(expectedValue._id);
+    
+            expect(axios.delete).toHaveBeenCalledWith(expectedURL);
         })
     })
 })

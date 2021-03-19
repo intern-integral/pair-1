@@ -5,7 +5,7 @@ import TodoPages from './components/TodoPages'
 
 function App() {
   return (
-    <div className="App">
+    <div className="App">Todo List
       <TodoPages />
     </div>
   );

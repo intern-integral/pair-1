@@ -4,23 +4,23 @@ const EditForm = ({handleUpdate,todo})=> {
     const [editValue, setEditValue] = useState('');
     const [editDescValue, setEditDescValue] = useState('');
 
+    function setupField() {
+        setEditValue(todo.title);
+        setEditDescValue(todo.desc);
+    }
+
     useEffect(()=> {
-        if(todo){
-            setEditValue(todo.title);
-            setEditDescValue(todo.desc);
-        }
-    },[todo]);
+        setupField();
+    },[]);
 
     const handleOnChange = (e)=> {
         setEditValue(e.target.value);
     }
 
     const handleSumbitEdit = () => {
-        if(todo._id) {
-            handleUpdate(todo._id, editValue, editDescValue);
-            setEditValue('');
-            setEditDescValue('');
-        }
+        handleUpdate(todo._id, editValue, editDescValue);
+        setEditValue('');
+        setEditDescValue('');
     }
 
     return (
@@ -36,7 +36,7 @@ const EditForm = ({handleUpdate,todo})=> {
                 onChange = {(e) => setEditDescValue(e.target.value)}
             />
             <button
-                id ="update-btn"
+            id ="update-btn"
                 onClick={() => handleSumbitEdit()}
             >
             update

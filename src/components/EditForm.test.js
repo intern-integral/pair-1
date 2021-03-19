@@ -41,14 +41,45 @@ describe("EditForm", ()=> {
             const updateButtonWrapper = wrapper.find('#update-btn');
             const editTitleField = wrapper.find('#edit-title-field');
             const editDescField = wrapper.find('#edit-desc-field');
+
+            await act(async()=> {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                wrapper.update();
+            });
+
             await act(async()=> {
                 await editTitleField.simulate('change',mockEditTitleEvent);
                 await editDescField.simulate('change', mockEditDescEvent);
                 await updateButtonWrapper.simulate('click');
+                console.log(wrapper.find('EditForm').props().todo);
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                wrapper.update();
             });
 
             expect(mockHandleUpdate).toHaveBeenCalledWith(mockTodo._id,"Edited title","Edited desc");
         })
 
     })
+
+    // describe('#editHandling', () => {
+    //     it('should called handle edit when invoked', async () => {
+    //         const mockFunc = jest.fn();
+    //         const mockData = {_id : '299292', title : "DODODO", desc : "LAJSDKLJSADKL"}
+    //         const wrapper = shallow(<EditForm handleUpdate = {mockFunc} todo={mockData}/>);
+            
+    //         const updateBtn = wrapper.find("#update-btn");
+    //         const valueField = wrapper.find("#edit-title-field");
+    //         const descField = wrapper.find("#edit-desc-field");
+
+    //         await act(async () => {
+    //             valueField.onChange({data : {value : mockData.title}});
+    //             descField.onChange({data : {value : mockData.desc}})
+    //             updateBtn.simulate('click')
+    //             wrapper.update();
+    //         })
+
+
+    //     })
+    // })
+    
 })

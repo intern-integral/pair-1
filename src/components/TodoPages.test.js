@@ -2,13 +2,14 @@ import React from "react";
 import { shallow, mount } from 'enzyme';
 import TodoPages from './TodoPages';
 import { act } from "@testing-library/react";
-import { fetchTodos, postTodo, editTodo } from '../services/TodoServices'
+import { fetchTodos, postTodo, editTodo, deleteTodo } from '../services/TodoServices'
 import EditForm from "./EditForm";
 
 jest.mock('../services/TodoServices', ()=> ({
     fetchTodos: jest.fn(),
     postTodo: jest.fn(),
-    editTodo: jest.fn()
+    editTodo: jest.fn(),
+    deleteTodo: jest.fn()
 }))
 
 const mockedFetchedTodo = [
@@ -37,7 +38,7 @@ describe('TodoPages', () => {
         });
 
         it('should render list of task', async () => {
-            fetchTodos.mockResolvedValue(dummyData);
+            fetchTodos.mockResolvedValue(mockedFetchedTodo);
             const wrapper  = mount(<TodoPages/>);
 
             await act(async () => {
@@ -45,14 +46,18 @@ describe('TodoPages', () => {
                 wrapper.update();
             })
             const actualTasks = wrapper.find('.task');
-            expect(actualTasks).toHaveLength(dummyData.length);
+            expect(actualTasks).toHaveLength(mockedFetchedTodo.length);
         });
 
-        it('should render button and input field element', ()=> {
-            const wrapper = shallow(<TodoPages/>);
-            
+        it('should render button and input field element', async()=> {
+            fetchTodos.mockResolvedValue(mockedFetchedTodo);
+            const wrapper = mount(<TodoPages/>);
+            await act(async()=> {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                await wrapper.update();
+            })
             const buttonElement = wrapper.find('#submit-btn');
-            const inputElement = wrapper.find('#nput-title-field');
+            const inputElement = wrapper.find('#input-title-field');
             const descField = wrapper.find("#input-desc-field");
 
             expect(buttonElement.exists()).toBeTruthy();
@@ -63,21 +68,22 @@ describe('TodoPages', () => {
 
     describe('#handleDelete', () => {
         it('should delete todo when invoked', async() => {
-            const expectedData = [
-                {_id : 2, title : "Task 2", desc : "do the thing that in task 2"},
-                {_id : 3, title : "Task 3", desc : "do the thing that in task 3"},
-                {_id : 4, title : "Task 4", desc : "do the thing that in task 4"},
-                {_id : 5, title : "Task 5", desc : "do the thing that in task 5"},
-            ];
+            fetchTodos.mockResolvedValue(mockedFetchedTodo);
+            const deletedTodo = {_id : '6051c471c355991e8c259e90', title : "Task 5", desc : "do the thing that in task 5"}
             const wrapper = shallow(<TodoPages/>);
+            await act(async()=> {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                await wrapper.update();
+            })
 
-            const todoListComponent = wrapper.find('TodoList');
-            await todoListComponent.props().handleDelete(1);
-            const todoListComponentUpdated = wrapper.find('TodoList');
-            const expectedTodos = todoListComponentUpdated.props().todos;
+            await act(async()=> {
+                const todoListComponent = wrapper.find('TodoList');
+                await todoListComponent.props().handleDelete(deletedTodo._id);
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                await wrapper.update();
+            })
 
-            expect(expectedTodos.length).toBe(4);
-            expect(expectedTodos).toEqual(expectedData);
+            expect(deleteTodo).toHaveBeenCalledWith(deletedTodo._id);
         })
     })
 
@@ -109,9 +115,11 @@ describe('TodoPages', () => {
     describe('#handleUpdate', () => {
         it('should edit data when handleEdit is invoked', async()=> {
             fetchTodos.mockResolvedValue(mockedFetchedTodo)
-            const editTodoData = {_id : "6051c471c355991e8c259eKK", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
+            const editTodoData = {_id : "6051c471c355991e8c259e90", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
             editTodo.mockResolvedValue(editTodoData);
             const wrapper = mount(<TodoPages />);
+
+            
             await act(async()=> {
                 await (new Promise(resolve => setTimeout(resolve, 0)));
                 await wrapper.update();
@@ -123,6 +131,7 @@ describe('TodoPages', () => {
 
             await act(async()=> {
                 const editFormComponent = wrapper.find('EditForm');
+                const editBtn = editFormComponent.find('#update-btn'); 
                 await editFormComponent.props().handleUpdate(editTodoData._id, editTodoData.title, editTodoData.desc);
                 await (new Promise(resolve => setTimeout(resolve, 0)));
                 await wrapper.update();

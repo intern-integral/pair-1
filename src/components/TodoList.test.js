@@ -13,7 +13,7 @@ const dummyData = [
 describe("TodoList", () => {
     describe("#render", () => {
         it('should render TodoList correctly', () => {
-            const wrapper = shallow(<TodoList/>);
+            const wrapper = shallow(<TodoList todos={dummyData}/>);
 
             const actualComponents = wrapper.find('.todo-list');
             
@@ -38,5 +38,15 @@ describe("TodoList", () => {
             expect(mockHandleDelete).toHaveBeenCalledWith(1);
         })
 
+        it('should set edit id when button clicked', ()=> {
+            const mockHandleEdit = jest.fn();
+            const wrapper = shallow(<TodoList todos= { dummyData } handleEdit= { mockHandleEdit }/>);
+
+            const actualButtons = wrapper.find('.edit-btn');
+            actualButtons.at(0).simulate('click');
+            
+            expect(mockHandleEdit).toHaveBeenCalled();
+            expect(mockHandleEdit).toHaveBeenCalledWith(1);
+        })
     })
 })
