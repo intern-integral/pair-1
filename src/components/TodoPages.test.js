@@ -11,6 +11,14 @@ jest.mock('../services/TodoServices', ()=> ({
     editTodo: jest.fn()
 }))
 
+const dummyData = [
+    {_id : "6051c471c355991e8c259e94", title : "Task 1", desc : "do the thing that in task 1"},
+    {_id : "6051c471c355991e8c259e93", title : "Task 2", desc : "do the thing that in task 2"},
+    {_id : '6051c471c355991e8c259e92', title : "Task 3", desc : "do the thing that in task 3"},
+    {_id : '6051c471c355991e8c259e91', title : "Task 4", desc : "do the thing that in task 4"},
+    {_id : '6051c471c355991e8c259e90', title : "Task 5", desc : "do the thing that in task 5"},
+];
+
 describe('TodoPages', () => {
     afterEach(()=> {
         jest.resetAllMocks();
@@ -19,17 +27,22 @@ describe('TodoPages', () => {
         it('should render TodoPages correctly', () => {
             const wrapper = shallow(<TodoPages/>);
 
-            const actualComponents = wrapper.find('.todo-pages');
-
-            expect(actualComponents).toHaveLength(1);
+            process.nextTick(() => {
+                wrapper.update();
+                const actualComponents = wrapper.find('.todo-pages');
+                expect(actualComponents).toHaveLength(1);
+            }, 0)
         });
 
         it('should render list of task', () => {
+            fetchTodos.mockResolvedValue(dummyData);
             const wrapper  = mount(<TodoPages/>);
 
-            const actualTasks = wrapper.find('.task');
-
-            expect(actualTasks).toHaveLength(5);
+            process.nextTick(async () => {
+                wrapper.update();
+                const actualTasks = wrapper.find('.task');
+                expect(actualTasks).toHaveLength(dummyData.length);
+            }, 0)
         });
 
         it('should render button and input field element', ()=> {
