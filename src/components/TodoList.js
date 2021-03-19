@@ -1,7 +1,6 @@
 import React from 'react';
 
 const TodoList = ({todos, handleDelete, handleEdit}) => {
-    console.log(todos);
     return(        
         <div className="todo-list">
             <ul>

@@ -14,7 +14,7 @@ const dummyData = [
 describe("TodoList", () => {
     describe("#render", () => {
         it('should render TodoList correctly', () => {
-            const wrapper = shallow(<TodoList/>);
+            const wrapper = shallow(<TodoList todos={dummyData}/>);
 
             const actualComponents = wrapper.find('.todo-list');
             
