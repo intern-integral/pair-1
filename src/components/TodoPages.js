@@ -33,7 +33,6 @@ const TodoPages = ({}) => {
             setTodos(data);
         };
         setupData();
-        console.log(todos);
     }, []) 
 
     const handleDelete = (id) => {

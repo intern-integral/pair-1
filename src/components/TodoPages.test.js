@@ -3,6 +3,7 @@ import { shallow, mount } from 'enzyme';
 import TodoPages from './TodoPages';
 import { act } from "@testing-library/react";
 import { fetchTodos, postTodo, editTodo } from '../services/TodoServices'
+import EditForm from "./EditForm";
 
 jest.mock('../services/TodoServices', ()=> ({
     fetchTodos: jest.fn(),
@@ -74,7 +75,7 @@ describe('TodoPages', () => {
                 {_id : '6051c471c355991e8c259e90', title : "Task 5", desc : "do the thing that in task 5"}
             ])
             const dummyData = {_id : "6051c471c355991e8c259eKK", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
-            postTodo.mockResolvedValue(dummyData);
+            postTodo.mockResolvedValue(dummyData);  
             const wrapper = mount(<TodoPages/>);
             await act(async()=> {
                 await (new Promise(resolve => setTimeout(resolve, 0)));
@@ -96,29 +97,34 @@ describe('TodoPages', () => {
     });
 
     describe('#handleEdit', () => {
-        it('should edit data when handleEdit is invoked', async() => {
-            const expectedData = [
-                {_id : 1, title : "Edited Task 1", desc : "Edited desc"},
-                {_id : 2, title : "Task 2", desc : "do the thing that in task 2"},
-                {_id : 3, title : "Task 3", desc : "do the thing that in task 3"},
-                {_id : 4, title : "Task 4", desc : "do the thing that in task 4"},
-                {_id : 5, title : "Task 5", desc : "do the thing that in task 5"},
-                
-            ];
-            const wrapper = mount(<TodoPages/>);
+        it('should edit data when handleEdit is invoked', async()=> {
+            fetchTodos.mockResolvedValue([
+                {_id : '6051c471c355991e8c259e94', title : "Task 1", desc : "do the thing that in task 1"},
+                {_id : '6051c471c355991e8c259e93', title : "Task 2", desc : "do the thing that in task 2"},
+                {_id : '6051c471c355991e8c259e92', title : "Task 3", desc : "do the thing that in task 3"},
+                {_id : '6051c471c355991e8c259e91', title : "Task 4", desc : "do the thing that in task 4"},
+                {_id : '6051c471c355991e8c259eKK', title : "Task 5", desc : "do the thing that in task 5"}
+            ])
+            const dummyData = {_id : "6051c471c355991e8c259eKK", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
+            editTodo.mockResolvedValue(dummyData);
+            const wrapper = mount(<TodoPages />);
+            await act(async()=> {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                await wrapper.update();
+            })
 
-            await act(async()=>{
+            await act(async()=> {
                 const todoListComponent = wrapper.find('TodoList');
-                await todoListComponent.props().handleEdit(1);
+                await todoListComponent.props().handleEdit(dummyData._id);
+                await (new Promise(resolve => setTimeout(resolve, 0)));
                 await wrapper.update();
-                const todoFormComponent = wrapper.find('EditForm');
-                await todoFormComponent.props().handleUpdate(1, "Edited Task 1", "Edited desc");
+                const editFormComponent = wrapper.find('EditForm');
+                await editFormComponent.props().handleUpdate(dummyData._id, dummyData.title, dummyData.desc);
+                await (new Promise(resolve => setTimeout(resolve, 0)));
                 await wrapper.update();
-            });
-            await flushPromises();
-            const todoListComponentUpdated = wrapper.find('TodoList');
+            });            
 
-            expect(todoListComponentUpdated.props().todos).toEqual(expectedData);
+            expect(editTodo).toHaveBeenCalledWith(dummyData._id, dummyData.title, dummyData.desc);
 
         })
     });
