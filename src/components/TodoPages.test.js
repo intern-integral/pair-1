@@ -34,14 +34,15 @@ describe('TodoPages', () => {
             }, 0)
         });
 
-        it('should render list of task', () => {
+        it('should render list of task', async (done) => {
             fetchTodos.mockResolvedValue(dummyData);
             const wrapper  = mount(<TodoPages/>);
 
             process.nextTick(async () => {
-                wrapper.update();
+                await wrapper.update();
                 const actualTasks = wrapper.find('.task');
                 expect(actualTasks).toHaveLength(dummyData.length);
+                done();
             }, 0)
         });
 
