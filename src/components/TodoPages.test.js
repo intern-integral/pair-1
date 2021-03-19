@@ -11,6 +11,14 @@ jest.mock('../services/TodoServices', ()=> ({
     editTodo: jest.fn()
 }))
 
+const mockedFetchedTodo = [
+    {_id : '6051c471c355991e8c259e94', title : "Task 1", desc : "do the thing that in task 1"},
+    {_id : '6051c471c355991e8c259e93', title : "Task 2", desc : "do the thing that in task 2"},
+    {_id : '6051c471c355991e8c259e92', title : "Task 3", desc : "do the thing that in task 3"},
+    {_id : '6051c471c355991e8c259e91', title : "Task 4", desc : "do the thing that in task 4"},
+    {_id : '6051c471c355991e8c259e90', title : "Task 5", desc : "do the thing that in task 5"}
+]
+
 describe('TodoPages', () => {
     afterEach(()=> {
         jest.resetAllMocks();
@@ -67,13 +75,7 @@ describe('TodoPages', () => {
 
     describe('#handleSubmit', () => {
         it('should add todo when handleSubmit invoked', async() => {
-            fetchTodos.mockResolvedValue([
-                {_id : '6051c471c355991e8c259e94', title : "Task 1", desc : "do the thing that in task 1"},
-                {_id : '6051c471c355991e8c259e93', title : "Task 2", desc : "do the thing that in task 2"},
-                {_id : '6051c471c355991e8c259e92', title : "Task 3", desc : "do the thing that in task 3"},
-                {_id : '6051c471c355991e8c259e91', title : "Task 4", desc : "do the thing that in task 4"},
-                {_id : '6051c471c355991e8c259e90', title : "Task 5", desc : "do the thing that in task 5"}
-            ])
+            fetchTodos.mockResolvedValue(mockedFetchedTodo);
             const dummyData = {_id : "6051c471c355991e8c259eKK", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
             postTodo.mockResolvedValue(dummyData);  
             const wrapper = mount(<TodoPages/>);
@@ -96,36 +98,29 @@ describe('TodoPages', () => {
         })
     });
 
-    describe('#handleEdit', () => {
+    describe('#handleUpdate', () => {
         it('should edit data when handleEdit is invoked', async()=> {
-            fetchTodos.mockResolvedValue([
-                {_id : '6051c471c355991e8c259e94', title : "Task 1", desc : "do the thing that in task 1"},
-                {_id : '6051c471c355991e8c259e93', title : "Task 2", desc : "do the thing that in task 2"},
-                {_id : '6051c471c355991e8c259e92', title : "Task 3", desc : "do the thing that in task 3"},
-                {_id : '6051c471c355991e8c259e91', title : "Task 4", desc : "do the thing that in task 4"},
-                {_id : '6051c471c355991e8c259eKK', title : "Task 5", desc : "do the thing that in task 5"}
-            ])
-            const dummyData = {_id : "6051c471c355991e8c259eKK", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
-            editTodo.mockResolvedValue(dummyData);
+            fetchTodos.mockResolvedValue(mockedFetchedTodo)
+            const editTodoData = {_id : "6051c471c355991e8c259eKK", title : "Task 8", desc : "ASDJASJDLKASJDLKSA"}
+            editTodo.mockResolvedValue(editTodoData);
             const wrapper = mount(<TodoPages />);
             await act(async()=> {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                await wrapper.update();
+                const todoListComponent = wrapper.find('TodoList');
+                await todoListComponent.props().handleEdit(editTodoData._id);
                 await (new Promise(resolve => setTimeout(resolve, 0)));
                 await wrapper.update();
             })
 
             await act(async()=> {
-                const todoListComponent = wrapper.find('TodoList');
-                await todoListComponent.props().handleEdit(dummyData._id);
-                await (new Promise(resolve => setTimeout(resolve, 0)));
-                await wrapper.update();
                 const editFormComponent = wrapper.find('EditForm');
-                await editFormComponent.props().handleUpdate(dummyData._id, dummyData.title, dummyData.desc);
+                await editFormComponent.props().handleUpdate(editTodoData._id, editTodoData.title, editTodoData.desc);
                 await (new Promise(resolve => setTimeout(resolve, 0)));
                 await wrapper.update();
             });            
 
-            expect(editTodo).toHaveBeenCalledWith(dummyData._id, dummyData.title, dummyData.desc);
-
+            expect(editTodo).toHaveBeenCalledWith(editTodoData._id, editTodoData.title, editTodoData.desc);
         })
     });
 
