@@ -24,20 +24,28 @@ describe('TodoPages', () => {
         jest.resetAllMocks();
     })
     describe('#render', () => {
-        it('should render TodoPages correctly', () => {
+        it('should render TodoPages correctly', async () => {
             const wrapper = shallow(<TodoPages/>);
 
-            const actualComponents = wrapper.find('.todo-pages');
+            await act(async () => {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                wrapper.update();
+            })
 
+            const actualComponents = wrapper.find('.todo-pages');
             expect(actualComponents).toHaveLength(1);
         });
 
-        it('should render list of task', () => {
+        it('should render list of task', async () => {
+            fetchTodos.mockResolvedValue(dummyData);
             const wrapper  = mount(<TodoPages/>);
 
+            await act(async () => {
+                await (new Promise(resolve => setTimeout(resolve, 0)));
+                wrapper.update();
+            })
             const actualTasks = wrapper.find('.task');
-
-            expect(actualTasks).toHaveLength(5);
+            expect(actualTasks).toHaveLength(dummyData.length);
         });
 
         it('should render button and input field element', ()=> {
